@@ -1,5 +1,3 @@
----
-
 ```markdown
 # Title: EECS 449M Assignment 2 Report
 # Author: <your name here>
@@ -263,5 +261,3 @@ Thus, the scheme is vulnerable to chosen-ciphertext attacks due to RSA's multipl
 
 This vulnerability highlights the importance of using proper padding schemes with RSA to prevent such malleability in practical encryption systems.
 ```
-
----
