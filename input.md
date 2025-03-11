@@ -1,4 +1,5 @@
-# Assignment Report
+# Title: EECS 449M Assignment 2 Report
+# Author: <your name here>
 
 ## 
 
@@ -22,29 +23,24 @@ goals.
 the project builds on a previous assignment by adding the following key
 features:
 
--   ****Multi-device ****s****upport:**\
+-   **Multi-device support:**\
     **I added functions to invite a new device, accept an invitation,
     and revoke a device. Each device has its own public key and logs its
-    actions using cryptographic signatures.****
+    actions using cryptographic signatures.
 
-```{=html}
-<!-- -->
-```
--   ****Friend ****f****eatures:****\
+
+-   **Friend features:**\
     The client now maintains a local friend list that stores trusted
     public keys and photo logs for each friend. This lets users view
     photos uploaded by friends while ensuring the data is authentic.
 
-```{=html}
-<!-- -->
-```
--   ****e****nhanced ****l****og ****e****ntries:****\
+-   **enhanced log entries:**\
     I updated the log entry structure to include a hash value, the
     device's public key, and a digital signature. These additions help
     verify that every log entry is correct and hasn't been tampered
     with.
 
-![](./10000001000003A6000000A75134CF106E4CA52A.png){width="6.6929in"
+![](./1.png){width="6.6929in"
 height="1.1965in"}
 
 ### 2. Detailed design and implementation
@@ -53,17 +49,16 @@ height="1.1965in"}
 
 the **LogEntry** class was extended to store extra information:
 
--   ****Operation ****c****ode:**** determines the type of operation
+-   **Operation code:** determines the type of operation
     (REGISTER, PUT_PHOTO, DEVICE_INVITE, DEVICE_ADDED, DEVICE_REVOKED).
--   ****Data:**** encoded information relevant to the operation (for
+-   **Data:** encoded information relevant to the operation (for
     example, the photo ID or the public key of an invited device
--   ****Hash ****v****alue (******hash_val******):**** a cryptographic
+-   **Hash value (hash_val):** a cryptographic
     hash computed over the operation, ensuring the integrity of the log
     entry
--   ****Device ****p****ublic ****k****ey
-    (******device_pub_key******):**** the public key of the device that
+-   **Device public key(device_pub_key):** the public key of the device that
     generated the log entry
--   ****Digital ****s****ignature (******digital_sig******):**** a
+-   **Digital signature (digital_sig):** a
     signature over the hash value, allowing other devices and the server
     to verify authenticity
 
@@ -71,7 +66,7 @@ these additions make it possible to check that log entries (such as
 those for photo uploads or device management) are valid and have not
 been modified by an attacker.
 
-![](./1000000100000378000001D75D080411C576927F.png){width="6.6929in"
+![](./2.png){width="6.6929in"
 height="3.55in"}
 
 #### 
@@ -80,38 +75,32 @@ height="3.55in"}
 
 the client was updated to support multi-device operations:
 
--   ****Device ****i****nvitation :****\
+-   **Device invitation :**\
     the **invite_device()** function computes a hash of the invited
     device's public key, signs it, and creates a log entry. This tells
     the server and other devices that an invitation has been sent.
 
-```{=html}
-<!-- -->
-```
--   ****Device ****a****cceptance :****\
+-   **Device acceptance :**\
     when a device receives an invitation, it calls **accept_invite()**.
     The device then creates a log entry (DEVICE_ADDED) that proves it
     was invited and accepted the invitation.
 
-```{=html}
-<!-- -->
-```
--   ****Device ****r****evocation :****\
+-   **Device revocation :**\
     the **revoke_device()** function allows a device to remove another
     device's access. Even if a revoked device had uploaded photos before
     it was revoked, those photos remain valid because they were signed
     when the device was still authorized.
 
-![](./1000000100000456000002E5B8954684D283CA5B.png){width="6.6929in"
+![](./3.png){width="6.6929in"
 height="4.4681in"}
 
 In addition, local dictionaries and sets are maintained to track:
 
--   ****i****nvitations ****s****ent :**** Stored in
+-   **invitations sent :** Stored in
     **\_device_invite_dict** to manage pending invites
--   ****a****uthorized ****d****evices :**** Tracked using
+-   **authorized devices :** Tracked using
     **\_device_added_set**
--   ****r****evoked ****d****evices :**** Managed in
+-   **revoked devices :** Managed in
     **\_device_revoked_set**
 
 #### c. Helper functions
@@ -119,33 +108,26 @@ In addition, local dictionaries and sets are maintained to track:
 important helper functions were added and simplified to aid in protocol
 verification:
 
--   ****compute_hash :****\
+-   **compute_hash :**\
     this function computes a simple hash over an operation and its data.
     It uses a base hash (either the last log hash or a friend-specific
     hash) and combines it with the operation and data
 
-    ![](./10000001000002E60000007D0CA4154EF7AB5042.png){width="6.3972in"
+    ![](./4.png){width="6.3972in"
     height="1.0772in"}
 
-```{=html}
-<!-- -->
-```
--   ****check_signature :****\
+-   **check_signature :**\
     this function checks that a log entry's digital signature matches
     the computed hash and that the device is allowed to perform the
     operation.
 
-```{=html}
-<!-- -->
-```
--   ****remove_invitation:****\
+
+-   **remove_invitation:**\
     a helper function that removes a device from the invitation list if
     it has already been processed.
 
-```{=html}
-<!-- -->
-```
--   ****check_friend_log:****\
+
+-   **check_friend_log:**\
     this function verifies friend log entries by checking the hash, the
     signature, and the trust status of the device.
 
@@ -156,12 +138,12 @@ scenarios:
 
 #### a. Device compromise with an honest server
 
--   ****Security ****g****oal:****\
+-   **Security goal:**\
     ensure that if one device is compromised, a friend can only see
     photos that were uploaded by authorized devices at the time of the
     upload.
 
--   ****i****mplementation:****
+-   **implementation:**
 
     -   each photo upload is logged with a timestamp and a hash computed
         over the photo and associated metadata.
@@ -174,12 +156,12 @@ scenarios:
 
 #### b. Server Compromise with Multi-Client
 
--   ****Security ****g****oal:****\
+-   **Security goal:**\
     the server should not be able to tamper with or reorder log entries
     so that the set of photos retrieved by a friend accurately reflects
     the friend's uploads.
 
--   ****i****mplementation:****
+-   **implementation:**
 
     -   hash chaining across log entries ensures that any attempt by a
         compromised server to modify, reorder, or drop entries will be
@@ -192,12 +174,12 @@ scenarios:
 
 #### c. Real User Compromise
 
--   ****Security ****g****oal:****\
+-   **Security goal:**\
     Although a compromised user can do anything, the system should
     ensure that any malicious behavior is immediately evident to other
     users.
 
--   ****i****mplementation:****
+-   **implementation:**
 
     -   the protocol cannot prevent a fully compromised user from
         misusing their privileges. However, it does enforce that any
@@ -222,7 +204,7 @@ compromise, server tampering, and unauthorized actions. this approach
 provides a solid foundation for building secure multi-device
 applications.
 
-![](./1000000100000325000001D99CECFB5E0F64ADAA.png){width="6.6929in"
+![](./5.png){width="6.6929in"
 height="3.5909in"}
 
 # Part 2: System Security Questions
@@ -276,10 +258,10 @@ decryptions, the scheme becomes vulnerable. Here\'s why:
 Thus, because the RSA part of the ciphertext is malleable (due to its
 multiplicative property), an attacker can craft related ciphertexts that
 reveal relationships between the original and modified plaintexts. This
-means the scheme is ****not secure**** against chosen-ciphertext
+means the scheme is **not secure** against chosen-ciphertext
 attacks.
 
-****Summary:****
+**Summary:**
 
 -   The scheme is secure against chosen-plaintext attacks because the
     use of a random one-time pad (via c=m⊕r) completely hides the
